@@ -1,0 +1,35 @@
+{
+  "name": "ai-coding-mentor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI Coding Mentor - AI-Powered Coding Interview Preparation Platform",
+  "scripts": {
+    "dev:frontend": "npm.cmd --prefix frontend run dev",
+    "build:frontend": "npm.cmd --prefix frontend run build",
+    "dev:backend": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"& .\\backend\\venv\\Scripts\\python.exe -m uvicorn app.main:app --app-dir backend --reload --port 8000 --host 127.0.0.1\"",
+    "db:migrate": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"& .\\backend\\venv\\Scripts\\python.exe backend\\migrations\\migrate.py\"",
+    "test:backend": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"& .\\backend\\venv\\Scripts\\python.exe backend\\tests\\test_health.py\"",
+    "test:execution": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"& .\\backend\\venv\\Scripts\\python.exe backend\\tests\\test_execution.py\"",
+    "test:analysis": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"& .\\backend\\venv\\Scripts\\python.exe -m pytest backend\\tests\\test_analysis.py -v\"",
+    "test:groq-live": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"& .\\backend\\venv\\Scripts\\python.exe backend\\tests\\smoke_test_groq_live.py\"",
+    "test:interview": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"& .\\backend\\venv\\Scripts\\python.exe -m pytest backend\\tests\\test_interview.py -v\"",
+    "test:interview-live": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"& .\\backend\\venv\\Scripts\\python.exe backend\\tests\\smoke_test_interview_live.py\"",
+    "test:auth": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"& .\\backend\\venv\\Scripts\\python.exe -m pytest backend\\tests\\test_auth.py -v\"",
+    "test:history": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"& .\\backend\\venv\\Scripts\\python.exe -m pytest backend\\tests\\test_history.py -v\"",
+    "test:e2e": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"& .\\backend\\venv\\Scripts\\python.exe -m pytest backend\\tests\\test_e2e_full_journey.py -v\"",
+    "test:live": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"& .\\backend\\venv\\Scripts\\python.exe backend\\tests\\smoke_test_live.py\"",
+    "test:frontend": "npm.cmd --prefix frontend test",
+    "test:all": "npm.cmd run test:backend && npm.cmd run test:execution && npm.cmd run test:analysis && npm.cmd run test:interview && npm.cmd run test:auth && npm.cmd run test:history && npm.cmd run test:e2e && npm.cmd run test:frontend"
+  },
+  "keywords": [
+    "ai",
+    "coding-interview",
+    "react",
+    "typescript",
+    "fastapi",
+    "vite",
+    "tailwind"
+  ],
+  "author": "Harish",
+  "license": "MIT"
+}

@@ -1,0 +1,60 @@
+# ==============================================================================
+# AI Coding Mentor - Root .gitignore
+# ==============================================================================
+
+# Node / Frontend
+node_modules/
+dist/
+dist-ssr/
+build/
+.pnp
+.pnp.js
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Python / Backend
+venv/
+.venv/
+env/
+backend/venv/
+__pycache__/
+**/*.py[cod]
+**/*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Databases & SQLite
+*.db
+*.sqlite
+*.sqlite3
+ai_coding_mentor.db
+backend/ai_coding_mentor.db
+*.dump
+*.sql.gz
+
+# Secrets & Environment Files (CRITICAL - Never commit actual secrets)
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Logs
+*.log
+logs/
+
+# IDE & OS Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.suo
+.DS_Store
+Thumbs.db
