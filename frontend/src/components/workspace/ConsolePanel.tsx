@@ -7,11 +7,11 @@ import {
   Copy, 
   Check, 
   Info, 
-  Clock, 
-  HardDrive, 
   Maximize2, 
   Minimize2, 
   CheckCircle2, 
+  PanelBottomClose,
+  PanelBottomOpen,
   ListOrdered,
   Sparkles
 } from 'lucide-react';
@@ -48,6 +48,7 @@ interface ConsolePanelProps {
   analysisSection?: SimpleAnalysisSection;
   onSectionChange?: (sec: SimpleAnalysisSection) => void;
   onApplySolution?: (code: string) => void;
+  layoutMode?: 'horizontal' | 'vertical';
 }
 
 export const ConsolePanel: React.FC<ConsolePanelProps> = ({
@@ -71,9 +72,17 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
   analysisSection,
   onSectionChange,
   onApplySolution,
+  layoutMode = 'horizontal',
 }) => {
   const [copied, setCopied] = useState<boolean>(false);
   const [userExpanded, setUserExpanded] = useState<boolean | null>(null);
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
+
+  // When tab is clicked, ensure panel is not collapsed
+  const handleTabClick = (tab: ConsoleTab) => {
+    setIsCollapsed(false);
+    onTabChange(tab);
+  };
 
   // Default to expanded height when viewing AI Analysis for plenty of room, unless user explicitly toggled it
   const isExpanded = userExpanded !== null ? userExpanded : activeTab === 'analysis';
@@ -107,25 +116,31 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
   };
 
   return (
-    <div className={`bg-[#0b0f19] border-t border-slate-800 flex flex-col shrink-0 select-none transition-all duration-200 ${
-      isExpanded ? 'h-96 sm:h-[30rem]' : 'h-64 sm:h-72'
+    <div className={`bg-[#0b0f19] flex flex-col select-none transition-all duration-200 min-h-0 ${
+      layoutMode === 'horizontal'
+        ? 'w-full h-full flex-1 border-t lg:border-t-0 lg:border-l border-slate-800 overflow-hidden'
+        : `w-full border-t border-slate-800 shrink-0 ${
+            isCollapsed 
+              ? 'h-10 overflow-hidden' 
+              : (isExpanded ? 'h-80 sm:h-96' : 'h-52 sm:h-64')
+          }`
     }`}>
       {/* Panel Tab Navigation Bar */}
-      <div className="bg-[#0e1422] border-b border-slate-800/90 px-3 flex items-center justify-between shrink-0">
+      <div className="bg-[#0e1422] border-b border-slate-800/90 px-3 flex items-center justify-between shrink-0 h-10">
         <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
           {/* Tab 0: Test Cases */}
           <button
-            onClick={() => onTabChange('testcases')}
-            className={`flex items-center gap-2 px-3 py-2 text-xs font-medium border-b-2 transition-colors ${
+            onClick={() => handleTabClick('testcases')}
+            className={`flex items-center gap-1.5 px-2.5 py-2 text-xs font-medium border-b-2 transition-colors shrink-0 ${
               activeTab === 'testcases'
                 ? 'border-emerald-500 text-emerald-300 bg-slate-900/40'
                 : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/20'
             }`}
           >
             <ListOrdered className="w-3.5 h-3.5" />
-            <span>Test Cases</span>
+            <span>Tests</span>
             {testSuiteSummary && testSuiteSummary.completed ? (
-              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono border ${
+              <span className={`px-1 py-0.2 rounded-full text-[10px] font-mono border ${
                 testSuiteSummary.passed === testSuiteSummary.total
                   ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
                   : 'bg-rose-500/20 text-rose-300 border-rose-500/30'
@@ -133,7 +148,7 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
                 {testSuiteSummary.passed}/{testSuiteSummary.total}
               </span>
             ) : (
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-slate-800 text-slate-400 border border-slate-700/60">
+              <span className="px-1 py-0.2 rounded-full text-[10px] font-mono bg-slate-800 text-slate-400 border border-slate-700/60">
                 {testCases.length}
               </span>
             )}
@@ -141,15 +156,15 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
 
           {/* Tab 1: Input */}
           <button
-            onClick={() => onTabChange('input')}
-            className={`flex items-center gap-2 px-3 py-2 text-xs font-medium border-b-2 transition-colors ${
+            onClick={() => handleTabClick('input')}
+            className={`flex items-center gap-1.5 px-2.5 py-2 text-xs font-medium border-b-2 transition-colors shrink-0 ${
               activeTab === 'input'
                 ? 'border-emerald-500 text-emerald-300 bg-slate-900/40'
                 : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/20'
             }`}
           >
             <FileInput className="w-3.5 h-3.5" />
-            <span>Input (stdin)</span>
+            <span>Input</span>
             {stdin.trim().length > 0 && (
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
             )}
@@ -157,15 +172,15 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
 
           {/* Tab 2: Output */}
           <button
-            onClick={() => onTabChange('output')}
-            className={`flex items-center gap-2 px-3 py-2 text-xs font-medium border-b-2 transition-colors ${
+            onClick={() => handleTabClick('output')}
+            className={`flex items-center gap-1.5 px-2.5 py-2 text-xs font-medium border-b-2 transition-colors shrink-0 ${
               activeTab === 'output'
                 ? 'border-emerald-500 text-emerald-300 bg-slate-900/40'
                 : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/20'
             }`}
           >
             <Terminal className="w-3.5 h-3.5" />
-            <span>Output (stdout)</span>
+            <span>Output</span>
             {hasOutput && (
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
             )}
@@ -173,8 +188,8 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
 
           {/* Tab 3: Errors */}
           <button
-            onClick={() => onTabChange('errors')}
-            className={`flex items-center gap-2 px-3 py-2 text-xs font-medium border-b-2 transition-colors ${
+            onClick={() => handleTabClick('errors')}
+            className={`flex items-center gap-1.5 px-2.5 py-2 text-xs font-medium border-b-2 transition-colors shrink-0 ${
               activeTab === 'errors'
                 ? 'border-rose-500 text-rose-300 bg-slate-900/40'
                 : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/20'
@@ -183,40 +198,40 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
             <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
             <span>Errors</span>
             {hasError && (
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-rose-500/20 text-rose-300 border border-rose-500/30">
+              <span className="px-1 py-0.2 rounded-full text-[10px] font-mono bg-rose-500/20 text-rose-300 border border-rose-500/30">
                 !
               </span>
             )}
           </button>
 
-          {/* Tab 4: AI Mentor Guidance */}
+          {/* Tab 4: AI Guidance */}
           <button
-            onClick={() => onTabChange('analysis')}
-            className={`flex items-center gap-2 px-3 py-2 text-xs font-medium border-b-2 transition-colors ${
+            onClick={() => handleTabClick('analysis')}
+            className={`flex items-center gap-1.5 px-2.5 py-2 text-xs font-medium border-b-2 transition-colors shrink-0 ${
               activeTab === 'analysis'
                 ? 'border-emerald-400 text-emerald-300 bg-emerald-950/20'
                 : 'border-transparent text-slate-400 hover:text-emerald-300 hover:bg-slate-900/20'
             }`}
           >
             <Sparkles className={`w-3.5 h-3.5 ${isAnalyzing ? 'animate-spin text-emerald-400' : 'text-emerald-400'}`} />
-            <span>AI Guidance</span>
+            <span>AI Mentor</span>
             {analysis && (
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                {analysis.bugs?.length ? `${analysis.bugs.length} bugs` : 'Ready'}
+              <span className="px-1 py-0.2 rounded-full text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                {analysis.bugs?.length ? `${analysis.bugs.length}` : 'Ready'}
               </span>
             )}
           </button>
         </div>
 
         {/* Panel Action Controls */}
-        <div className="flex items-center gap-2 py-1">
+        <div className="flex items-center gap-1.5 py-1 shrink-0">
           {/* Execution telemetry if available */}
           {executionResult && (
-            <div className="hidden sm:flex items-center gap-2 text-[11px] font-mono text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+            <div className="hidden md:flex items-center gap-1.5 text-[10px] font-mono text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">
               {executionResult.status === 'Accepted' && (
                 <span className="text-emerald-400 flex items-center gap-1 font-semibold">
                   <CheckCircle2 className="w-3 h-3" />
-                  Accepted
+                  OK
                 </span>
               )}
               {executionResult.status && executionResult.status !== 'Accepted' && (
@@ -225,15 +240,8 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
                 </span>
               )}
               {executionResult.execution_time !== undefined && executionResult.execution_time !== null && (
-                <span className="flex items-center gap-1 text-slate-300 border-l border-slate-700/60 pl-2">
-                  <Clock className="w-3 h-3 text-emerald-400" />
+                <span className="text-slate-300 border-l border-slate-700/60 pl-1.5">
                   {executionResult.execution_time}s
-                </span>
-              )}
-              {executionResult.memory_used !== undefined && executionResult.memory_used !== null && (
-                <span className="flex items-center gap-1 text-slate-300 border-l border-slate-700/60 pl-2">
-                  <HardDrive className="w-3 h-3 text-sky-400" />
-                  {executionResult.memory_used}KB
                 </span>
               )}
             </div>
@@ -254,18 +262,38 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
             </button>
           )}
 
+          {/* Vertical Collapse / Restore Toggle */}
+          {layoutMode === 'vertical' && (
+            <button
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              title={isCollapsed ? 'Open output panel' : 'Minimize output panel'}
+              className="p-1.5 rounded text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
+            >
+              {isCollapsed ? (
+                <PanelBottomOpen className="w-3.5 h-3.5 text-emerald-400" />
+              ) : (
+                <PanelBottomClose className="w-3.5 h-3.5" />
+              )}
+            </button>
+          )}
+
           {/* Expand / Collapse Height Toggle */}
-          <button
-            onClick={() => setUserExpanded(!isExpanded)}
-            title={isExpanded ? 'Collapse panel height' : 'Expand panel height'}
-            className="p-1.5 rounded text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors hidden sm:block"
-          >
-            {isExpanded ? (
-              <Minimize2 className="w-3.5 h-3.5" />
-            ) : (
-              <Maximize2 className="w-3.5 h-3.5" />
-            )}
-          </button>
+          {layoutMode === 'vertical' && (
+            <button
+              onClick={() => {
+                setIsCollapsed(false);
+                setUserExpanded(!isExpanded);
+              }}
+              title={isExpanded ? 'Collapse panel height' : 'Expand panel height'}
+              className="p-1.5 rounded text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors hidden sm:block"
+            >
+              {isExpanded ? (
+                <Minimize2 className="w-3.5 h-3.5" />
+              ) : (
+                <Maximize2 className="w-3.5 h-3.5" />
+              )}
+            </button>
+          )}
 
           {/* Clear Console */}
           <button

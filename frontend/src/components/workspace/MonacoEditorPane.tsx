@@ -57,7 +57,7 @@ export const MonacoEditorPane: React.FC<MonacoEditorPaneProps> = ({
   };
 
   return (
-    <div className="relative flex-1 min-h-[300px] h-full bg-[#1e1e1e] flex flex-col overflow-hidden">
+    <div className="relative flex-1 min-h-0 min-w-0 h-full bg-[#1e1e1e] flex flex-col overflow-hidden">
       {/* Editor Sub-header Bar */}
       <div className="bg-[#181818] border-b border-slate-800/80 px-4 py-1.5 flex items-center justify-between text-xs text-slate-400 font-mono shrink-0">
         <div className="flex items-center gap-2">

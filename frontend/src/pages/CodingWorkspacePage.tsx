@@ -44,6 +44,20 @@ export const CodingWorkspacePage: React.FC<CodingWorkspacePageProps> = ({
   const [saveToast, setSaveToast] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   
+  // Layout mode: 'horizontal' (Side-by-Side: Editor on Left, Console on Right) or 'vertical' (Stacked: Top/Bottom)
+  const [layoutMode, setLayoutMode] = useState<'horizontal' | 'vertical'>(() => {
+    const saved = localStorage.getItem('ai_coding_mentor_layout');
+    return saved === 'vertical' ? 'vertical' : 'horizontal';
+  });
+
+  const handleToggleLayout = () => {
+    setLayoutMode((prev) => {
+      const next = prev === 'horizontal' ? 'vertical' : 'horizontal';
+      localStorage.setItem('ai_coding_mentor_layout', next);
+      return next;
+    });
+  };
+  
   // Store code per language so candidate edits are preserved across language toggling
   const [codePerLanguage, setCodePerLanguage] = useState<Record<SupportedLanguageId, string>>(() => {
     const initialMap: Partial<Record<SupportedLanguageId, string>> = {};
@@ -568,40 +582,54 @@ export const CodingWorkspacePage: React.FC<CodingWorkspacePageProps> = ({
         isAnalyzing={isAnalyzing}
         onSaveSession={handleOpenSaveModal}
         isSavingSession={isSavingSession}
+        layoutMode={layoutMode}
+        onToggleLayout={handleToggleLayout}
       />
 
-      {/* 2. Main Monaco Editor Viewport */}
-      <div className="flex-1 min-h-0 relative flex flex-col">
-        <MonacoEditorPane
-          code={currentCode}
-          language={selectedLanguage}
-          onChange={handleCodeChange}
-        />
+      {/* 2 & 3. Main Workspace Area (Side-by-Side or Stacked) */}
+      <div className={`flex-1 min-h-0 min-w-0 flex ${
+        layoutMode === 'horizontal' ? 'flex-col lg:flex-row' : 'flex-col'
+      } overflow-hidden`}>
+        {/* Monaco Editor Viewport */}
+        <div className="flex-1 min-w-0 min-h-0 h-full flex flex-col overflow-hidden">
+          <MonacoEditorPane
+            code={currentCode}
+            language={selectedLanguage}
+            onChange={handleCodeChange}
+          />
+        </div>
+
+        {/* Output Console & AI Guidance Panel */}
+        <div className={
+          layoutMode === 'horizontal'
+            ? 'w-full lg:w-[480px] xl:w-[560px] 2xl:w-[620px] min-h-0 h-full flex flex-col shrink-0'
+            : 'w-full min-h-0 flex flex-col'
+        }>
+          <ConsolePanel
+            layoutMode={layoutMode}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            stdin={stdin}
+            onStdinChange={setStdin}
+            executionResult={executionResult}
+            onClearConsole={handleClearConsole}
+            testCases={currentTestCases}
+            testSuiteSummary={testSuiteSummary}
+            isRunningTests={isRunningTests}
+            onRunAllTests={handleRunAllTests}
+            onRunSingleTest={handleRunSingleTest}
+            onAddTestCase={handleAddTestCase}
+            onUpdateTestCase={handleUpdateTestCase}
+            onDeleteTestCase={handleDeleteTestCase}
+            analysis={analysisResult}
+            isAnalyzing={isAnalyzing}
+            onAnalyze={handleAnalyzeCode}
+            analysisSection={analysisSection}
+            onSectionChange={setAnalysisSection}
+            onApplySolution={handleApplySolution}
+          />
+        </div>
       </div>
-
-      {/* 3. Bottom Console, Test Cases & AI Feedback Panel */}
-      <ConsolePanel
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        stdin={stdin}
-        onStdinChange={setStdin}
-        executionResult={executionResult}
-        onClearConsole={handleClearConsole}
-        testCases={currentTestCases}
-        testSuiteSummary={testSuiteSummary}
-        isRunningTests={isRunningTests}
-        onRunAllTests={handleRunAllTests}
-        onRunSingleTest={handleRunSingleTest}
-        onAddTestCase={handleAddTestCase}
-        onUpdateTestCase={handleUpdateTestCase}
-        onDeleteTestCase={handleDeleteTestCase}
-        analysis={analysisResult}
-        isAnalyzing={isAnalyzing}
-        onAnalyze={handleAnalyzeCode}
-        analysisSection={analysisSection}
-        onSectionChange={setAnalysisSection}
-        onApplySolution={handleApplySolution}
-      />
 
       {/* Save Session Toast Notification */}
       {saveToast && (

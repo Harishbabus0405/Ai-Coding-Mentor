@@ -44,13 +44,13 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
 
         {/* Main Page Body */}
         <main
-          className={`flex-1 ${
+          className={`flex-1 min-h-0 ${
             currentPage === 'workspace'
-              ? 'overflow-hidden p-3 md:p-4'
+              ? 'overflow-hidden p-2 sm:p-3 md:p-3.5 flex flex-col'
               : 'overflow-y-auto p-6 md:p-8'
           } bg-[#0a0e17]`}
         >
-          <div className={currentPage === 'workspace' ? 'w-full h-full' : 'max-w-7xl mx-auto'}>
+          <div className={currentPage === 'workspace' ? 'w-full h-full min-h-0 flex flex-col flex-1' : 'max-w-7xl mx-auto'}>
             {children}
           </div>
         </main>

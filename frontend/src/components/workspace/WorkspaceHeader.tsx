@@ -8,7 +8,9 @@ import {
   Bookmark,
   Bug,
   Lightbulb,
-  FileCode2
+  FileCode2,
+  Columns2,
+  Rows2
 } from 'lucide-react';
 import type { SupportedLanguageId } from '../../types';
 import { SUPPORTED_LANGUAGES } from '../../constants/languages';
@@ -27,6 +29,8 @@ interface WorkspaceHeaderProps {
   isRunningTests: boolean;
   isAnalyzing: boolean;
   isSavingSession?: boolean;
+  layoutMode?: 'horizontal' | 'vertical';
+  onToggleLayout?: () => void;
 }
 
 export const WorkspaceHeader: React.FC<WorkspaceHeaderProps> = ({
@@ -43,6 +47,8 @@ export const WorkspaceHeader: React.FC<WorkspaceHeaderProps> = ({
   isRunningTests,
   isAnalyzing,
   isSavingSession,
+  layoutMode,
+  onToggleLayout,
 }) => {
   const isBusy = isRunning || isRunningTests || isAnalyzing;
 
@@ -140,6 +146,27 @@ export const WorkspaceHeader: React.FC<WorkspaceHeaderProps> = ({
           )}
           <span>Run Tests</span>
         </button>
+
+        {/* Layout Mode Toggle */}
+        {onToggleLayout && (
+          <button
+            onClick={onToggleLayout}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-xs text-slate-300 hover:text-white transition-colors"
+            title={layoutMode === 'horizontal' ? 'Switch to Stacked View (Top/Bottom)' : 'Switch to Side-by-Side View (Columns)'}
+          >
+            {layoutMode === 'horizontal' ? (
+              <>
+                <Columns2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="hidden xl:inline">Side-by-Side</span>
+              </>
+            ) : (
+              <>
+                <Rows2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="hidden xl:inline">Stacked</span>
+              </>
+            )}
+          </button>
+        )}
 
         {/* 4. Save Session */}
         {onSaveSession && (
